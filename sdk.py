@@ -47,20 +47,15 @@ EMBUDP_INIT.argtypes = [ctypes.c_char_p, ctypes.c_int]  # Arguments: address (st
 address = b"192.168.2.201"  # Example IP address of the TCP device (change this to the actual IP address)
 port = 4370  # Example port number (change this to the actual port number)
 result_init = EMBUDP_INIT(address, port)
-
-# Get device information
-device_info_buffer = ctypes.create_string_buffer(1024)  # Buffer to store device information
-result_device_info = Z_GetDeviceInfo(EMBUDP_INIT, device_info_buffer)
-
-# Check the device info result
-if result_device_info == 1: 
-    device_info = device_info_buffer.value.decode('utf-8')  # Convert byte buffer to string
-    print("Device information:", device_info)
-else:   
-    print("Failed to retrieve device information.")
-
+# Check the initialization result
+if result_init == 0:
+    print("Initialized communication with the TCP device successfully.")
+else:
+    print("Failed to initialize communication with the TCP device.")
+#get device handle    
+device_handle = ctypes.c_void_p(result_init) 
 # Read the latest attendance logs
-result_read_log = Z_ReadRTLog()
+result_read_log = Z_ReadRTLog(device_handle)
 if result_read_log == 1:
     print("Attendance data read successfully.")
 else:
